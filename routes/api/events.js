@@ -1,10 +1,20 @@
 const router = require('express').Router();
 const Event = require('../../db/models').models.Event;
 
-router.get('/', (req, res)=>{
-	res.send('On /api/event route');
-})
 
+router.get('/', (req, res) => {
+    console.log(req.user);
+    Event.findAll({
+        attributes: ['id', 'name', 'startTime', 'endTime', 'venue', 'userId'],
+    })
+        .then((events) => {
+            res.status(200).send(events)
+        })
+        .catch((err) => {
+            console.log(err)
+            res.status(500).send("Error retrieving events")
+        })
+});
 
 router.post('/new', (req, res) => {
     //Add server-side validations if required here
@@ -14,7 +24,7 @@ router.post('/new', (req, res) => {
 
     // YYYY-MM-DD'T'HH:MM
     Event.create({
-        name: req.body.title,
+        name: req.body.name,
         venue: req.body.venue,
         imgUrl: req.body.imgUrl,
         startTime: new Date(req.body.startTime),
