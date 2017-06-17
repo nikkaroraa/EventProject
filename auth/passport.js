@@ -1,6 +1,7 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const models = require('../db/models').models;
+const BearerStrategy = require('passport-http-bearer').Strategy;
 
 /*
 	Used when Sessions are used in COOKIE-BASED manner
@@ -42,6 +43,11 @@ passport.serializeUser(function (user, done) {
 //After parsing the cookie and getting the session object with some properties like pageViews etc. 
 // now it is time to do deserialize ie. opposite of stroing an user as a user.email -> retrieving 
 // the user from user.email.
+
+/* 
+When subsequent requests are received, this email is used to find the user, 
+which will be restored to req.user.
+*/
 passport.deserializeUser(function (email, done) {
     models.User.findOne({
         where: {
@@ -139,6 +145,25 @@ function (username, password, cb) {
 
     }).catch((err) => {
         return cb(err, false);
+    })
+}));
+
+
+passport.use(new BearerStrategy(function (token, done) {
+    models.AuthToken.findOne({
+        where: {
+            token: token
+        },
+        include: [models.User]
+    }).then((authtoken) => {
+
+        if (authtoken && (authtoken.user)) {
+            return done(null, authtoken.user)
+        } else {
+            return done(null, false, {message: 'Could not authorize'})
+        }
+    }).catch((err) => {
+        return done(err, false)
     })
 }));
 

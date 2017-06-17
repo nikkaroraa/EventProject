@@ -18,5 +18,10 @@ The interface for accessing and working with the session variables remain the sa
 Express comes with a built-in session store called MemoryStore, which is the default when you don’t specify one explicitly.
 MemoryStore uses the application RAM for storing session data and works right out of the box, without the need for any database. Seeing how easily it is to set up, you might be tempted to make it the session store of your choice, but it is not recommended to do so because of the following reasons:
 
-Refer: http://expressjs-book.com/index.html%3Fp=128.	
+1. Memory consumption will keep growing with each new session.
+2. In case the app is restarted for any reason; all session data will be lost.
+3. Session data cannot be shared by other instances of the app in a cluster.
+
+Refer: 
+http://expressjs-book.com/index.html%3Fp=128	
 https://www.tutorialspoint.com/expressjs/expressjs_sessions.htm

@@ -3,6 +3,8 @@ const dbActions = require('../db/actions');
 const User = require('../db/models').models.User;
 const passport = require('../auth/passport');
 const el = require('../auth/authutils').ensureLogin;
+const models = require('../db/models').models;
+const uid = require('uid2');
 
 router.get('/', (req, res)=>{
 	res.send('On pages');
@@ -61,6 +63,31 @@ router.get('/logout', (req, res) => {
         res.redirect('/login')
     });
 
+});
+
+
+router.post('/authorize', (req, res) => {
+    //first, the user need to be signed up to have username and password
+    //then only he/she will be able to login with that credentials
+
+    models.UserLocal.findOne({
+        where: {
+            username: req.body.username,
+            password: req.body.password
+        }
+    }).then((user) => {
+
+        models.AuthToken.create({
+            token: uid(30),
+            userId: user.id
+        }).then((authtoken) => {
+            res.send({
+                success: true,
+                token: authtoken.token
+            })
+        })
+
+    })
 });
 
 module.exports = router;

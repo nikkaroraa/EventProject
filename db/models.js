@@ -45,7 +45,17 @@ UserLocal.belongsTo(User);
 User.hasOne(UserLocal);
 
 
-db.sync({force: false })
+const AuthToken = db.define('authtoken', {
+    token: {
+        type: Sequelize.STRING,
+        primaryKey: true
+    }
+});
+
+AuthToken.belongsTo(User);
+User.hasMany(AuthToken);
+
+db.sync({force: false})
      .then(() => {
          console.log("Database Synchronised");
      })
@@ -54,6 +64,7 @@ db.sync({force: false })
      models: {
         User,
         Event,
-        UserLocal
+        UserLocal,
+        AuthToken
      }
  }; 
