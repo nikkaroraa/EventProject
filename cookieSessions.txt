@@ -1,0 +1,22 @@
+There are two broad ways of implementing sessions in Express – using cookies and using a session store at the backend. Both of them add a new object in the request object named session, which contains the session variables.
+
+
+
+app.use(express.cookieSession({
+  key: 'app.sess',
+  secret: 'SUPERsekret'
+}));
+
+Once the session API is enabled, session variables can be accessed on the session object on the request object – req.session
+
+The session middleware implements generic session functionality with in-memory storage by default. It allows you to specify other storage formats, though.
+
+The cookieSession middleware, on the other hand, implements cookie-backed storage (that is, the entire session is serialized to the cookie, rather than just a session key. It should really only be used when session data is going to stay relatively small.
+
+The interface for accessing and working with the session variables remain the same – req.session – except now the session values reside on the backend.
+
+Express comes with a built-in session store called MemoryStore, which is the default when you don’t specify one explicitly.
+MemoryStore uses the application RAM for storing session data and works right out of the box, without the need for any database. Seeing how easily it is to set up, you might be tempted to make it the session store of your choice, but it is not recommended to do so because of the following reasons:
+
+Refer: http://expressjs-book.com/index.html%3Fp=128.	
+https://www.tutorialspoint.com/expressjs/expressjs_sessions.htm
