@@ -28,6 +28,34 @@ const User = db.define('user', {
     email: Sequelize.STRING
 });
 
+const Invitee = db.define('invitee', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    email: {
+        type: Sequelize.STRING,
+        unique: true,
+        index: true
+    }
+});
+
+const EventInvitee = db.define('eventinvitee', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    rsvp: Sequelize.BOOLEAN,
+    token: Sequelize.STRING
+});
+
+EventInvitee.belongsTo(Event);
+Event.hasMany(EventInvitee);
+EventInvitee.belongsTo(Invitee);
+Invitee.hasMany(EventInvitee);
+
 const UserLocal = db.define('userlocal', {
     id: {
         type: Sequelize.INTEGER,
@@ -64,6 +92,8 @@ db.sync({force: false})
      models: {
         User,
         Event,
+        Invitee,
+        EventInvitee,
         UserLocal,
         AuthToken
      }
