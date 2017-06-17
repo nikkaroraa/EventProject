@@ -6,7 +6,7 @@ const inviteesRoute = require('./invitees');
 
 router.use('/events', eventRoute);
 router.use('/users', userRoute);
-router.use('/invitees', inviteesRoute);
+
 
 module.exports = router;
 
