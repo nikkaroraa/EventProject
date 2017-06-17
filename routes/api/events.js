@@ -43,4 +43,29 @@ router.post('/new', (req, res) => {
 
 	})
 })
+
+router.put('/:id', (req, res) => {
+    Event.update({
+            name: req.body.name,
+            message: req.body.message,
+            startTime: req.body.startTime ? new Date(req.body.startTime) : undefined,
+            endTime: req.body.endTime ? new Date(req.body.endTime) : undefined,
+            imgUrl: req.body.imgUrl,
+            venue: req.body.venue,
+        },
+        {
+            where: {
+                id: req.params.id,
+                userId: 1 /*req.user.id*/
+            }
+        }).then((updatedEvent) => {
+            if (updatedEvent[0] == 0) {
+                return res.status(403).send('Event does not exist, or you cannot edit it')
+            } else {
+                res.status(200).send('Event successfully edited')
+            }
+
+    })
+});
+
 module.exports = router;
