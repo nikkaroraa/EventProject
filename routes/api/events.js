@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const Event = require('../../db/models').models.Event;
-
+const authutils = require('../../auth/authutils');
 
 router.get('/', (req, res) => {
     console.log(req.user);
@@ -68,4 +68,21 @@ router.put('/:id', (req, res) => {
     })
 });
 
+
+router.delete('/:id', /*authutils.eia(),*/ (req, res) => {
+    Event.destroy(
+        {
+            where: {
+                id: req.params.id,
+                userId: 1 /*req.userIsAdmin ?*/ /*req.user.id*/ //: undefined
+            }
+        }).then((destroyedRows) => {
+        if (destroyedRows == 0) {
+            return res.status(403).send('Event does not exist, or you cannot edit it')
+        } else {
+            res.status(200).send('Event successfully deleted')
+        }
+
+    })
+});
 module.exports = router;
