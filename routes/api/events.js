@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const Event = require('../../db/models').models.Event;
 const authutils = require('../../auth/authutils');
+const EventInvitee = require('../../db/models').models.EventInvitee;
+const Invitee = require('../../db/models').models.Invitee;
 
 router.get('/', (req, res) => {
     console.log(req.user);
@@ -34,8 +36,36 @@ router.post('/new', (req, res) => {
 
 	})
 	.then((event) => 
-	{
-		res.status(200).send(event);
+	{	console.log(event);
+		if (req.body.invitees) {
+            let invitees = req.body.invitees.split(';');
+            invitees = invitees.map((i) => {
+                return {email: i.trim()}
+            });
+            Invitee.bulkCreate(invitees, {
+                ignoreDuplicates: true
+            })
+                .then((invitees) => {
+                    let eventInvitee = invitees.map((i) => {
+                        return {
+                            eventId: event.id,
+                            inviteeId: i.id
+                        }
+                    });
+
+                    EventInvitee.bulkCreate(eventInvitee, {
+                        ignoreDuplicates: true
+                    })
+                        .then((eiArr) => {
+                            res.status(200).send(event)
+                            
+                            
+
+                        })
+                })
+        } else {
+            res.status(200).send(event)
+		}
 	})
 	.catch((err) => 
 	{
@@ -85,4 +115,5 @@ router.delete('/:id', /*authutils.eia(),*/ (req, res) => {
 
     })
 });
+
 module.exports = router;
