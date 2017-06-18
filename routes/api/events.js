@@ -182,4 +182,20 @@ router.put('/:id/invitees', (req, res) => {
                 })
         })
 });
+
+router.delete('/:id/invitees/:invId', (req, res) => {
+    EventInvitee.destroy({
+        where: {
+            eventId: req.params.id,
+            inviteeId: req.params.invId
+        }
+    }).then((result) => {
+        if (result == 0) {
+            return res.status(500).send({error: 'Invitee or Event did not exist'})
+        } else {
+            return res.status(200).send({success: true})
+        }
+    })
+});
+
 module.exports = router;
