@@ -41,6 +41,11 @@ router.post('/new', (req, res) => {
             let invitees = req.body.invitees.split(';');
             invitees = invitees.map((i) => {
                 return {email: i.trim()}
+                /*
+                returning an object with email key as the bulkCreate statement 
+                needs to be executed with Invitee.bulkCreate({email: inviteeEmail})
+                just like create({}) syntax
+            	*/
             });
             Invitee.bulkCreate(invitees, {
                 ignoreDuplicates: true
@@ -146,5 +151,35 @@ router.get('/:id/invitees', (req, res) => {
     })
 });
 
+router.put('/:id/invitees', (req, res) => {
+    let invitees = req.body.invitees.split(';');
+    invitees = invitees.map((i) => {
+        return {email: i.trim()}
+        /*
+	        returning an object with email key as the bulkCreate statement 
+	        needs to be executed with Invitee.bulkCreate({email: inviteeEmail})
+	        just like create({}) syntax
+		*/
+    });
+    Invitee.bulkCreate(invitees, {
+        ignoreDuplicates: true
+    })
+        .then((invitees) => {
+            let eventInvitee = invitees.map((i) => {
+                return {
+                    eventId: req.params.id,
+                    inviteeId: i.id
+                }
+            });
 
+            EventInvitee.bulkCreate(eventInvitee, {
+                ignoreDuplicates: true
+            })
+                .then((eiArr) => {
+                    res.status(200).send({
+                        newInvitees: eiArr
+                    })
+                })
+        })
+});
 module.exports = router;
