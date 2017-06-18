@@ -3,6 +3,7 @@ const Event = require('../../db/models').models.Event;
 const authutils = require('../../auth/authutils');
 const EventInvitee = require('../../db/models').models.EventInvitee;
 const Invitee = require('../../db/models').models.Invitee;
+const im = require('../../utils/inviteemailer');
 
 router.get('/', (req, res) => {
     console.log(req.user);
@@ -51,6 +52,7 @@ router.post('/new', (req, res) => {
                 ignoreDuplicates: true
             })
                 .then((invitees) => {
+                	console.log("Invitees " + invitees);
                     let eventInvitee = invitees.map((i) => {
                         return {
                             eventId: event.id,
@@ -62,8 +64,12 @@ router.post('/new', (req, res) => {
                         ignoreDuplicates: true
                     })
                         .then((eiArr) => {
-                            res.status(200).send(event)
-                            
+                            res.status(200).send(event);
+                            let emailArr = invitees.map((i) => i.email);
+                            im.sendInvite(emailArr, function () {
+                                console.log('Invites are sent');
+							const im = require('../../utils/inviteemailer');
+						});
                             
 
                         })
@@ -121,7 +127,7 @@ router.delete('/:id', /*authutils.eia(),*/ (req, res) => {
     })
 });
 
-
+/*			INVITEE ENDPOINTS			*/
 router.get('/:id/invitees', (req, res) => {
     EventInvitee.findAll({
         attributes: ['id'],
