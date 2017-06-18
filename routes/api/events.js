@@ -116,4 +116,35 @@ router.delete('/:id', /*authutils.eia(),*/ (req, res) => {
     })
 });
 
+
+router.get('/:id/invitees', (req, res) => {
+    EventInvitee.findAll({
+        attributes: ['id'],
+        where: {
+            eventId: req.params.id,
+            '$event.userId$': 1 /*req.user.id*/, 
+            /*
+            Used in this way so as to find the event.userId from the Event model that is linked 
+            with EventInvitee model
+        	*/
+        },
+        include: [{
+            model: Invitee,
+            as: 'invitee',
+            attributes: ['id', 'email']
+        }, {
+            model: Event,
+            as: 'event',
+            attributes: ['id', 'userId']
+        }]
+    }).then((invitees) => {
+        if (invitees) {
+            res.status(200).send(invitees)
+        } else {
+            res.status(500).send('No invitees found for this event')
+        }
+    })
+});
+
+
 module.exports = router;
