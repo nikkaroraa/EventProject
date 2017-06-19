@@ -38,6 +38,17 @@ const Invitee = db.define('invitee', {
         type: Sequelize.STRING,
         unique: true,
         index: true
+        /*
+        A very good analogy is to think 
+        of a database index as an index in a book. 
+        If you have a book regarding countries and you are looking for India, 
+        then why would you flip through the entire book – which is the equivalent 
+        of a full table scan in database terminology – when you can just go to the 
+        index at the back of the book, which will tell you the exact pages where you 
+        can find information on India. Similarly, as a book index contains a page number, a
+        database index contains a pointer to the row containing the value that you are searching 
+        for in your SQL. 
+        */
     }
 });
 

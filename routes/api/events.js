@@ -51,15 +51,21 @@ router.post('/new', (req, res) => {
             Invitee.bulkCreate(invitees, {
                 ignoreDuplicates: true
             })
-                .then((invitees) => {
-                	console.log("Invitees " + invitees);
-                    let eventInvitee = invitees.map((i) => {
+                .then((newInvitees) => {
+                    console.log('Invitees inside newInvitees: ', invitees);
+                    Invitee.findAll({
+					  where: {
+					    email: invitees[0].email
+					    
+					  }
+					}).then((allInvitees) => {
+
+						let eventInvitee = allInvitees.map((i) => {
                         return {
                             eventId: event.id,
                             inviteeId: i.id
                         }
-                    });
-
+					})
                     EventInvitee.bulkCreate(eventInvitee, {
                         ignoreDuplicates: true
                     })
@@ -67,12 +73,15 @@ router.post('/new', (req, res) => {
                             res.status(200).send(event);
                             let emailArr = invitees.map((i) => i.email);
                             im.sendInvite(emailArr, function () {
-                                console.log('Invites are sent');
+                            console.log('Invites are sent');
 							const im = require('../../utils/inviteemailer');
 						});
                             
 
                         })
+                    });
+
+                    
                 })
         } else {
             res.status(200).send(event)

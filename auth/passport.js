@@ -41,7 +41,7 @@ passport.serializeUser(function (user, done) {
 
 //fetches the email from the req.session object and does the following action.
 //After parsing the cookie and getting the session object with some properties like pageViews etc. 
-// now it is time to do deserialize ie. opposite of stroing an user as a user.email -> retrieving 
+// now it is time to do deserialize ie. opposite of string an user as a user.email -> retrieving 
 // the user from user.email.
 
 /* 
