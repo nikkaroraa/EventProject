@@ -13,7 +13,7 @@ const sendmail = nodemailer.createTransport({
 function createInvite(inviteeEmail) {
     return {
         from: 'narora200@gmail.com',
-        to: (typeof inviteeEmail == 'string') ? inviteeEmail : inviteeEmail.join(','),
+        to: (typeof inviteeEmail == 'string') ? inviteeEmail : inviteeEmail,
         subject: 'You are invited to an event',
         html: "<h3> Please come there's free lunch </h3>"
     }

@@ -55,6 +55,7 @@ router.post('/new', (req, res) => {
             })
                 .then((newInvitees) => {
                     console.log('Invitees inside newInvitees: ', invitees);
+                    let count = 0;
                     for(invitee of invitees){
 
                         Invitee.findAll({
@@ -72,12 +73,17 @@ router.post('/new', (req, res) => {
                     })
                         .then((eiArr) => {
                            
-                            let emailArr = invitees.map((i) => i.email);
-                            im.sendInvite(emailArr, function () {
-                            console.log('Invites are sent');
-                            const im = require('../../utils/inviteemailer');
-                        });
-                            
+                            if(!count){
+                                let emailArr = invitees.map((i) => i.email);
+                                const im = require('../../utils/inviteemailer');
+                                im.sendInvite(emailArr, function () {
+                                console.log('Invites are sent'); 
+                                
+                                });
+                                count++;
+                            }
+                        
+                                                       
 
                         })
                     });
