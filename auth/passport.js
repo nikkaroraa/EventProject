@@ -55,6 +55,7 @@ passport.deserializeUser(function (email, done) {
         }
     }).then((user) => {
         done(null, user);
+        //creates the object req.user
     })
 });
 

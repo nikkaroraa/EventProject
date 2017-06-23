@@ -4,11 +4,11 @@ const bodyParser = require('body-parser');
 const passport = require('./auth/passport');
 const cookieParser = require('cookie-parser');
 const expressSession = require('express-session');
-
+const cors = require('cors');
 
 const app = express();
 
-
+app.use(cors());
 app.set('view engine', 'hbs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));

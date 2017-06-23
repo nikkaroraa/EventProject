@@ -1,5 +1,7 @@
 const router = require('express').Router();
 const Event = require('../../db/models').models.Event;
+const User = require('../../db/models').models.User;
+
 const authutils = require('../../auth/authutils');
 const EventInvitee = require('../../db/models').models.EventInvitee;
 const Invitee = require('../../db/models').models.Invitee;
@@ -53,35 +55,37 @@ router.post('/new', (req, res) => {
             })
                 .then((newInvitees) => {
                     console.log('Invitees inside newInvitees: ', invitees);
-                    Invitee.findAll({
-					  where: {
-					    email: invitees[0].email
-					    
-					  }
-					}).then((allInvitees) => {
+                    for(invitee of invitees){
 
-						let eventInvitee = allInvitees.map((i) => {
+                        Invitee.findAll({
+                      where: {email: invitee.email} //check here
+                    }).then((allInvitees) => {
+                        console.log('allInvitees', allInvitees);
+                        let eventInvitee = allInvitees.map((i) => {
                         return {
                             eventId: event.id,
                             inviteeId: i.id
                         }
-					})
+                    })
                     EventInvitee.bulkCreate(eventInvitee, {
                         ignoreDuplicates: true
                     })
                         .then((eiArr) => {
-                            res.status(200).send(event);
+                           
                             let emailArr = invitees.map((i) => i.email);
                             im.sendInvite(emailArr, function () {
                             console.log('Invites are sent');
-							const im = require('../../utils/inviteemailer');
-						});
+                            const im = require('../../utils/inviteemailer');
+                        });
                             
 
                         })
                     });
-
+                    }
+                
                     
+
+                   res.status(200).send(event);
                 })
         } else {
             res.status(200).send(event)
@@ -93,6 +97,29 @@ router.post('/new', (req, res) => {
 
 	})
 })
+
+router.get('/:id', (req, res) => {
+    Event.findOne({
+        where: {
+            id: req.params.id
+        },
+        include: [{
+            model: User,
+            as: 'user',
+            attributes: ['name', 'email']
+        }]
+    }) 
+        .then((event) => {
+            if (!event) {
+                return res.status(500).send("No such event found")
+            }
+            res.status(200).send(event);
+        })
+        .catch((err) => {
+            res.status(500).send('Error finding event')
+        })
+});
+
 
 router.put('/:id', (req, res) => {
     Event.update({
@@ -117,6 +144,7 @@ router.put('/:id', (req, res) => {
 
     })
 });
+
 
 
 router.delete('/:id', /*authutils.eia(),*/ (req, res) => {
@@ -150,8 +178,8 @@ router.get('/:id/invitees', (req, res) => {
         },
         include: [{
             model: Invitee,
-            as: 'invitee',
-            attributes: ['id', 'email']
+            as: 'invitee'
+            
         }, {
             model: Event,
             as: 'event',
